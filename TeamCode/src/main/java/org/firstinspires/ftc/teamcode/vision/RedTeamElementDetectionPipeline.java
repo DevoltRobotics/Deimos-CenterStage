@@ -65,7 +65,7 @@ public class RedTeamElementDetectionPipeline extends TeamElementDetectionPipelin
             REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
     public static double hMin = 0;
-    public static double sMin = 0;
+    public static double sMin = 180;
     public static double vMin = 0;
 
     public static double hMax = 255;

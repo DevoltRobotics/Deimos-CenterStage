@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 
 
-@TeleOp(name = "teleop rojos")
-public class teleop extends OpMode {
+@TeleOp(name = "teleop azules")
+public class teleop2 extends OpMode {
 
     SampleMecanumDrive mecanumDrive;
     hardware Hardware;
@@ -25,7 +25,7 @@ public class teleop extends OpMode {
 
         Hardware.init(hardwareMap);
 
-        mecanumDrive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(90)));
+        mecanumDrive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(270)));
     }
 
     @Override
