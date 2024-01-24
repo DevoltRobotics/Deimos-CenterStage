@@ -33,6 +33,9 @@ public class teleop extends OpMode {
         telemetry.addData("posicion y", mecanumDrive.rightRear.getCurrentPosition());
         telemetry.addData("posicion x", mecanumDrive.rightFront.getCurrentPosition());
         telemetry.addData("elevador", Hardware.elev.getCurrentPosition());
+        telemetry.addData("a",mecanumDrive.getRawExternalHeading());
+        telemetry.addData("b",mecanumDrive.getExternalHeadingVelocity());
+        telemetry.addData("temp",mecanumDrive.navx.getTempC());
 
         double trigger = gamepad1.left_trigger;
 

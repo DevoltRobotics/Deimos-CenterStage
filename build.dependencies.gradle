@@ -1,4 +1,7 @@
 repositories {
+    flatDir {
+        dirs 'libs', 'C:\\Users\\santi\\navx-micro\\android\\libs'
+    }
     mavenCentral()
     google() // Needed for androidx
     maven { url = 'https://maven.brott.dev/' }
@@ -20,5 +23,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.10'
+    implementation(name:'navx_ftc-release', ext:'aar')
 }
 

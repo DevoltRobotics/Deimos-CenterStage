@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,6 +50,9 @@ import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.encoderTick
 import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.kV;
+import com.qualcomm.hardware.kauailabs.NavxMicroNavigationSensor;
+import com.kauailabs.navx.ftc.AHRS;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -74,6 +78,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<DcMotorEx> motors;
 
     private IMU imu;
+
+    public AHRS navx;
+
     private VoltageSensor batteryVoltageSensor;
 
     private List<Integer> lastEncPositions = new ArrayList<>();
@@ -93,11 +100,13 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: adjust the names of the following hardware devices to match your configuration
+        /*// TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
+        imu.initialize(parameters);*/
+
+        navx = AHRS.getInstance(hardwareMap.get(NavxMicroNavigationSensor.class, "navx"), AHRS.DeviceDataType.kProcessedData);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "fl");
         leftRear = hardwareMap.get(DcMotorEx.class, "bl");
@@ -197,10 +206,30 @@ public class SampleMecanumDrive extends MecanumDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
+
+    double lastAngle;
+    double lastAngularRate;
+
+    ElapsedTime deltaTimer = new ElapsedTime();
+    boolean firstUpdate = true;
+
     public void update() {
+        if(firstUpdate) {
+            deltaTimer.reset();
+            firstUpdate = false;
+        }
+
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
         if (signal != null) setDriveSignal(signal);
+
+        double currentAngle = -navx.getYaw();
+
+        lastAngularRate = ((currentAngle - lastAngle + 180) % 360 - 180) / deltaTimer.seconds();
+
+        lastAngle = currentAngle;
+
+        deltaTimer.reset();
     }
 
     public void waitForIdle() {
@@ -292,12 +321,14 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        // return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return Math.toRadians(lastAngle);
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        // return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        return Math.toRadians(lastAngularRate);
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

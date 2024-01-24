@@ -4,9 +4,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
+
 public class hardware {
     public DcMotor intake;
     public DcMotor intwo;
+
 
     public DcMotor elev;
 
@@ -19,7 +22,6 @@ public class hardware {
 
 
     public void init(HardwareMap hardwaremap) {
-
         intake = hardwaremap.dcMotor.get("intake");//motor expansion 2
         intwo = hardwaremap.dcMotor.get("intwo");
         elev = hardwaremap.get(DcMotor.class, "elevdor");//motor expansion 1
